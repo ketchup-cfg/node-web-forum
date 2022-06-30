@@ -19,7 +19,7 @@ const nonExistingId = async () => {
   return post._id.toString();
 };
 
-const PostsInDb = async () => {
+const getAllPosts = async () => {
   const posts = await Post.find({});
   return posts.map((post) => post.toJSON());
 };
@@ -27,5 +27,5 @@ const PostsInDb = async () => {
 module.exports = {
   initialPosts,
   nonExistingId,
-  PostsInDb,
+  getAllPosts,
 };

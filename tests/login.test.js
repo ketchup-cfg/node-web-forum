@@ -7,16 +7,16 @@ const api = supertest(app);
 
 const User = require('../models/user');
 
-beforeEach(async () => {
-  await User.deleteMany({});
-
-  const passwordHash = await bcrypt.hash('admin1', 10);
-  const user = new User({ username: 'root', passwordHash });
-
-  await user.save();
-});
-
 describe('authenticatiing', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('admin1', 10);
+    const user = new User({ username: 'root', passwordHash });
+
+    await user.save();
+  });
+
   test('succeeds when a valid username and password is provided', async () => {
     const login = {
       username: 'root',

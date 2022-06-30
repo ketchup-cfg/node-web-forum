@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 
 const app = express();
 const cors = require('cors');
+require('express-async-errors');
 const config = require('./utils/config');
 const postsRouter = require('./controllers/posts');
 const usersRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
 const middleware = require('./utils/middleware');
-require('express-async-errors');
 
 mongoose.connect(config.MONGODB_URI);
 
