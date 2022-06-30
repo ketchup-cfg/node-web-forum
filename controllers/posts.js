@@ -1,13 +1,25 @@
 const postsRouter = require('express').Router();
+const middleware = require('../utils/middleware');
 const Post = require('../models/post');
 
 postsRouter.get('/', async (_request, response) => {
-  const posts = await Post.find({});
+  const posts = await Post
+    .find({})
+    .populate('user', {
+      username: 1,
+      name: 1,
+    });
+
   response.json(posts);
 });
 
 postsRouter.get('/:id', async (request, response) => {
-  const post = await Post.findById(request.params.id);
+  const post = await Post
+    .findById(request.params.id)
+    .populate('user', {
+      username: 1,
+      name: 1,
+    });
 
   if (post) {
     response.json(post);
@@ -16,24 +28,29 @@ postsRouter.get('/:id', async (request, response) => {
   }
 });
 
-postsRouter.post('/', async (request, response) => {
+postsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const { body } = request;
+  const { user } = request;
 
   const post = new Post({
     title: body.title,
     content: body.content,
+    user: user._id,
   });
 
-  const savedPost = await post.save();
-  response.status(201).json(savedPost);
+  const newPost = await post.save();
+  user.posts = user.posts.concat(newPost._id);
+  await user.save();
+
+  response.status(201).json(newPost);
 });
 
-postsRouter.delete('/:id', async (request, response) => {
+postsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   await Post.findByIdAndRemove(request.params.id);
   response.status(204).end();
 });
 
-postsRouter.put('/:id', async (request, response) => {
+postsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
   const { body } = request;
 
   const post = {
@@ -44,8 +61,12 @@ postsRouter.put('/:id', async (request, response) => {
   const updatedPost = await Post.findByIdAndUpdate(
     request.params.id,
     post,
-    { new: true, runValidators: true },
+    {
+      new: true,
+      runValidators: true,
+    },
   );
+
   response.json(updatedPost);
 });
 
