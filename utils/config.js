@@ -1,19 +1,19 @@
 require('dotenv').config();
 
 const getDatabaseUri = (env) => {
-  if (env === 'dev') {
-    return env.DEV_MONGODB_URI;
+  if (env === 'development') {
+    return process.env.DEV_MONGODB_URI;
   }
 
   if (env === 'test') {
-    return env.TEST_MONGODB_URI;
+    return process.env.TEST_MONGODB_URI;
   }
 
   if (env === 'production') {
-    return env.MONGODB_URI;
+    return process.env.MONGODB_URI;
   }
 
-  return env.DEV_MONGODB_URI;
+  return process.env.DEV_MONGODB_URI;
 };
 
 const { PORT } = process.env;
